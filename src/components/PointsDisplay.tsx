@@ -1,0 +1,39 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useApp } from '@/contexts/AppContext';
+import { Trophy, Award, TrendingUp } from 'lucide-react';
+
+const PointsDisplay: React.FC = () => {
+  const { userStats } = useApp();
+
+  return (
+    <Card className="w-full bg-mindful-purple-light text-white">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center">
+          <Trophy size={18} className="mr-2" />
+          Mindfulness Points
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-3xl font-bold mb-4 flex items-center justify-center">
+          {userStats.points} 
+          <span className="text-sm ml-2 opacity-80">points</span>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="flex items-center">
+            <Award size={14} className="mr-1" />
+            <span>Streak: {userStats.streak} days</span>
+          </div>
+          <div className="flex items-center">
+            <TrendingUp size={14} className="mr-1" />
+            <span>Best: {userStats.highestStreak} days</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default PointsDisplay;
