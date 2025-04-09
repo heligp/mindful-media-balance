@@ -22,6 +22,7 @@ interface AppContextType {
   purchaseReward: (rewardId: string) => void;
   formatTime: (ms: number) => string;
   checkAndTriggerNotifications: () => void;
+  lockApp: (appName: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -32,6 +33,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [userSettings, setUserSettings] = useState<UserSettings>(defaultUserSettings);
   const [userStats, setUserStats] = useState<UserStats>(defaultUserStats);
   const [rewardItems, setRewardItems] = useState<RewardItem[]>(mockRewardItems);
+  const [lastPointUpdate, setLastPointUpdate] = useState<Date>(new Date());
 
   // Initialize mock data
   useEffect(() => {
@@ -40,22 +42,74 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTodayUsage(usage);
     setWeeklyUsage(weekly);
     
-    // Simulate data updates every minute (for demo purposes)
+    // Simulate data updates every 15 minutes (for demo, we'll use a shorter interval)
     const interval = setInterval(() => {
+      console.log("Updating usage data (simulating 15-minute interval)");
       setTodayUsage(prevUsage => {
         return prevUsage.map(app => ({
           ...app,
-          timeInMillis: app.timeInMillis + (Math.random() * 60 * 1000) // Add 0-60 seconds
+          timeInMillis: app.timeInMillis + (Math.random() * 10 * 60 * 1000) // Add 0-10 minutes
         }));
       });
       
       // Check if notifications should be triggered
       checkAndTriggerNotifications();
       
-    }, 60000); // every minute
+      // Award points for staying under limits
+      updatePointsForUsage();
+      
+    }, 60000); // Every minute for demo purposes, would be 900000 (15 minutes) in production
     
     return () => clearInterval(interval);
   }, []);
+  
+  // Update points based on usage compared to limits
+  const updatePointsForUsage = () => {
+    const now = new Date();
+    const timeSinceLastUpdate = now.getTime() - lastPointUpdate.getTime();
+    
+    // Only update points every 5 minutes (for demo purposes)
+    if (timeSinceLastUpdate < 5 * 60 * 1000) return;
+    
+    let pointsEarned = 0;
+    
+    todayUsage.forEach(app => {
+      const limitInMs = (userSettings.dailyLimits[app.appName] || 60) * 60 * 1000;
+      
+      if (app.timeInMillis <= limitInMs) {
+        // Award points for being under limit (10 points per 30 minutes under)
+        const minutesUnderLimit = (limitInMs - app.timeInMillis) / (60 * 1000);
+        const pointsForApp = Math.floor(minutesUnderLimit / 30) * 10;
+        pointsEarned += pointsForApp;
+      } else {
+        // Deduct points for exceeding limit (5 points per app over limit)
+        pointsEarned -= 5;
+      }
+    });
+    
+    if (pointsEarned !== 0) {
+      setUserStats(prev => ({
+        ...prev,
+        points: Math.max(0, prev.points + pointsEarned)
+      }));
+      
+      // Only show toast if points have changed
+      if (pointsEarned > 0) {
+        toast({
+          title: "Points Earned!",
+          description: `+${pointsEarned} points for responsible usage.`,
+        });
+      } else if (pointsEarned < 0) {
+        toast({
+          title: "Points Deducted",
+          description: `${pointsEarned} points for exceeding limits.`,
+          variant: "destructive",
+        });
+      }
+    }
+    
+    setLastPointUpdate(now);
+  };
 
   // Update user settings
   const updateUserSettings = (settings: Partial<UserSettings>) => {
@@ -131,10 +185,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           action: (
             <div className="flex space-x-2 mt-2">
               <button 
-                onClick={() => console.log('Block Now clicked')} 
+                onClick={() => lockApp(app.appName)} 
                 className="bg-destructive text-destructive-foreground py-1 px-3 rounded-md text-xs"
               >
-                Block Now
+                Lock Now
               </button>
               <button 
                 onClick={() => console.log('Snooze clicked')} 
@@ -154,6 +208,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     });
   };
+  
+  // Mock app locking function (would integrate with DevicePolicyManager in a real Android app)
+  const lockApp = (appName: string) => {
+    toast({
+      title: "App Locking Attempted",
+      description: `In a native app, this would lock ${appName} using DevicePolicyManager.`,
+    });
+    
+    // Show a follow-up toast with instructions
+    setTimeout(() => {
+      toast({
+        title: "Root Permissions Required",
+        description: "On a real device, you would need to grant root permissions for app locking.",
+      });
+    }, 2000);
+  };
 
   const value = {
     todayUsage,
@@ -166,6 +236,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     purchaseReward,
     formatTime,
     checkAndTriggerNotifications,
+    lockApp,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

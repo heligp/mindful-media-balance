@@ -2,17 +2,29 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApp } from '@/contexts/AppContext';
-import { Trophy, Award, TrendingUp } from 'lucide-react';
+import { Trophy, Award, TrendingUp, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const PointsDisplay: React.FC = () => {
   const { userStats } = useApp();
 
   return (
-    <Card className="w-full bg-mindful-purple-light text-white">
+    <Card className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center">
           <Trophy size={18} className="mr-2" />
-          Mindfulness Points
+          Guardian Points
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info size={14} className="ml-2 cursor-help opacity-70" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>Earn +10 points for every 30 minutes under your limit</p>
+                <p>Lose 5 points when you exceed your daily limit</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -24,11 +36,11 @@ const PointsDisplay: React.FC = () => {
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div className="flex items-center">
             <Award size={14} className="mr-1" />
-            <span>Streak: {userStats.streak} days</span>
+            <span>Current Streak: {userStats.streak} days</span>
           </div>
           <div className="flex items-center">
             <TrendingUp size={14} className="mr-1" />
-            <span>Best: {userStats.highestStreak} days</span>
+            <span>Best Streak: {userStats.highestStreak} days</span>
           </div>
         </div>
       </CardContent>

@@ -3,16 +3,17 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { UsageData } from '@/types';
 import { useApp } from '@/contexts/AppContext';
-import { Clock, AlertCircle } from 'lucide-react';
+import { Clock, AlertCircle, Lock } from 'lucide-react';
 
 interface AppUsageCardProps {
   app: UsageData;
 }
 
 const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
-  const { userSettings, formatTime, updateDailyLimit } = useApp();
+  const { userSettings, formatTime, updateDailyLimit, lockApp } = useApp();
   
   const limitInMs = (userSettings.dailyLimits[app.appName] || 60) * 60 * 1000;
   const usagePercentage = Math.min(100, (app.timeInMillis / limitInMs) * 100);
@@ -63,13 +64,24 @@ const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
     <Card className="w-full">
       <CardHeader className="pb-2 flex flex-row items-center space-x-2">
         {appIcon()}
-        <div>
+        <div className="flex-1">
           <CardTitle className="text-base">{app.appName}</CardTitle>
           <div className="flex items-center space-x-1 text-xs text-muted-foreground">
             <Clock size={12} />
             <span>Daily Limit: {userSettings.dailyLimits[app.appName] || 60} minutes</span>
           </div>
         </div>
+        {usagePercentage >= 100 && (
+          <Button 
+            size="sm" 
+            variant="outline"
+            className="flex items-center text-destructive border-destructive"
+            onClick={() => lockApp(app.appName)}
+          >
+            <Lock size={14} className="mr-1" />
+            Lock
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="pb-2">
         <div className="mb-2 flex justify-between">

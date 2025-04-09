@@ -6,6 +6,7 @@ import PointsDisplay from '@/components/PointsDisplay';
 import RewardsStore from '@/components/RewardsStore';
 import { useApp } from '@/contexts/AppContext';
 import Navbar from '@/components/Navbar';
+import GuardianMascot from '@/components/GuardianMascot';
 
 const Index = () => {
   const { todayUsage } = useApp();
@@ -14,11 +15,13 @@ const Index = () => {
     <div className="min-h-screen pb-24">
       <div className="container max-w-md mx-auto px-4 py-6">
         <header className="mb-6">
-          <h1 className="text-2xl font-bold">Mindful Media Balance</h1>
-          <p className="text-muted-foreground">Track and manage your social media usage</p>
+          <h1 className="text-2xl font-bold">TimeGuardian</h1>
+          <p className="text-muted-foreground">Your digital wellbeing companion</p>
         </header>
         
         <div className="space-y-6">
+          <GuardianMascot />
+          
           <PointsDisplay />
           
           <UsagePieChart data={todayUsage} />
