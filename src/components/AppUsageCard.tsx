@@ -3,17 +3,18 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Lock } from 'lucide-react';
+import { Lock, Info } from 'lucide-react';
 import { UsageData } from '@/types';
 import { formatTime } from '@/lib/mockData';
 import { useApp } from '@/contexts/AppContext';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AppUsageCardProps {
   app: UsageData;
 }
 
 const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
-  const { userSettings, lockApp, hasDeviceAdminPermission } = useApp();
+  const { userSettings, lockApp, hasDeviceAdminPermission, requestDeviceAdminPermission } = useApp();
   
   const limitInMinutes = userSettings.dailyLimits[app.appName] || 60; // Default to 60 minutes if not set
   const limitInMs = limitInMinutes * 60 * 1000;
@@ -23,6 +24,14 @@ const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
   // Calculate remaining time
   const remainingMs = isOverLimit ? 0 : limitInMs - app.timeInMillis;
   const remainingFormatted = formatTime(remainingMs);
+
+  const handleLockClick = () => {
+    if (!hasDeviceAdminPermission) {
+      requestDeviceAdminPermission();
+      return;
+    }
+    lockApp(app.appName);
+  };
   
   return (
     <Card className={`overflow-hidden ${isOverLimit ? 'border-red-400' : ''}`}>
@@ -52,15 +61,26 @@ const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
           <span className="text-xs text-muted-foreground">
             {isOverLimit ? 'Limit exceeded' : `${remainingFormatted} remaining`}
           </span>
-          <Button 
-            size="sm" 
-            variant={isOverLimit ? "destructive" : "outline"} 
-            className={`text-xs h-7 px-2 ${!hasDeviceAdminPermission ? 'opacity-50' : ''}`}
-            onClick={() => lockApp(app.appName)}
-          >
-            <Lock className="h-3 w-3 mr-1" />
-            {isOverLimit ? 'Lock Now' : 'Block App'}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="sm" 
+                  variant={isOverLimit ? "destructive" : "outline"} 
+                  className={`text-xs h-7 px-2 ${!hasDeviceAdminPermission ? 'opacity-70' : ''}`}
+                  onClick={handleLockClick}
+                >
+                  <Lock className="h-3 w-3 mr-1" />
+                  {isOverLimit ? 'Lock Now' : 'Block App'}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {hasDeviceAdminPermission 
+                  ? (isOverLimit ? "Lock this app immediately" : "Block this app temporarily") 
+                  : "Requires Device Admin permission"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </CardContent>
     </Card>

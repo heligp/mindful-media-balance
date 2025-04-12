@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { UsageData, UserSettings, UserStats, RewardItem } from '@/types';
 import { 
   generateMockUsageData, 
@@ -9,6 +10,12 @@ import {
   formatTime
 } from '@/lib/mockData';
 import { toast } from '@/components/ui/use-toast';
+import { 
+  checkPermissions, 
+  requestPermission, 
+  blockApp, 
+  isAppBlocked 
+} from '@/lib/permissionManager';
 
 interface AppContextType {
   todayUsage: UsageData[];
@@ -37,80 +44,76 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [userStats, setUserStats] = useState<UserStats>(defaultUserStats);
   const [rewardItems, setRewardItems] = useState<RewardItem[]>(mockRewardItems);
   const [lastPointUpdate, setLastPointUpdate] = useState<Date>(new Date());
-  const [hasUsageStatsPermission, setHasUsageStatsPermission] = useState(false);
-  const [hasDeviceAdminPermission, setHasDeviceAdminPermission] = useState(false);
-
+  const [permissions, setPermissions] = useState(checkPermissions());
+  
+  // Timer reference for cleanup
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Simulate WorkManager by using a 15-minute interval instead of 30 seconds
+  // In a real app, this would use the WorkManager API to schedule background tasks
+  const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes in ms
+  // For demo purposes, we'll use 1 minute instead of 15
+  const DEMO_REFRESH_INTERVAL = 60 * 1000; // 1 minute in ms
+  
+  // Check permission status on mount and when permissions might change
   useEffect(() => {
+    const storedPermissions = checkPermissions();
+    setPermissions(storedPermissions);
+  }, []);
+  
+  // Simulate background work with optimized intervals
+  useEffect(() => {
+    console.log("Starting background work simulation with optimized interval");
+    
+    // Initial data load
     const usage = generateMockUsageData();
     const weekly = generateWeeklyUsageData();
     setTodayUsage(usage);
     setWeeklyUsage(weekly);
     
-    const interval = setInterval(() => {
-      console.log("Updating usage data (simulating 15-minute interval)");
+    // Simulate WorkManager with longer intervals for battery optimization
+    timerRef.current = setInterval(() => {
+      console.log("Updating usage data (simulating 15-minute WorkManager interval)");
+      
       setTodayUsage(prevUsage => {
-        return prevUsage.map(app => ({
-          ...app,
-          timeInMillis: app.timeInMillis + (Math.random() * 10 * 60 * 1000)
-        }));
+        return prevUsage.map(app => {
+          // Simulate more realistic usage change over a longer period
+          const usageIncrease = Math.random() * 15 * 60 * 1000; // Up to 15 minutes more usage
+          return {
+            ...app,
+            timeInMillis: app.timeInMillis + usageIncrease
+          };
+        });
       });
       
       checkAndTriggerNotifications();
-      
       updatePointsForUsage();
       
-    }, 60000);
+    }, DEMO_REFRESH_INTERVAL); // Using 1 minute for demo purposes
     
-    return () => clearInterval(interval);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+  
+  const requestUsageStatsPermission = useCallback(async () => {
+    const granted = await requestPermission('USAGE_STATS');
+    if (granted) {
+      setPermissions(prev => ({ ...prev, usageStats: true }));
+    }
   }, []);
 
-  const requestUsageStatsPermission = () => {
-    toast({
-      title: "Requesting Usage Stats Permission",
-      description: "On a real device, this would open system settings to grant permission.",
-    });
-    
-    setTimeout(() => {
-      setHasUsageStatsPermission(true);
-      toast({
-        title: "Permission Granted",
-        description: "Usage stats permission granted successfully.",
-      });
-    }, 2000);
-  };
+  const requestDeviceAdminPermission = useCallback(async () => {
+    const granted = await requestPermission('DEVICE_ADMIN');
+    if (granted) {
+      setPermissions(prev => ({ ...prev, deviceAdmin: true }));
+    }
+  }, []);
 
-  const requestDeviceAdminPermission = () => {
-    toast({
-      title: "Requesting Device Admin Permission",
-      description: "On a real device, this would prompt to add device admin.",
-    });
-    
-    setTimeout(() => {
-      setHasDeviceAdminPermission(true);
-      toast({
-        title: "Permission Granted",
-        description: "Device admin permission granted successfully.",
-      });
-    }, 2000);
-  };
-
-  const lockApp = (appName: string) => {
-    if (hasDeviceAdminPermission) {
-      toast({
-        title: "App Locked",
-        description: `${appName} has been locked for 1 hour.`,
-      });
-      
-      setUserStats(prev => ({
-        ...prev,
-        points: prev.points + 50
-      }));
-      
-      toast({
-        title: "Points Awarded",
-        description: "+50 points for locking an app!",
-      });
-    } else {
+  const lockApp = useCallback((appName: string) => {
+    if (!permissions.deviceAdmin) {
       toast({
         title: "Permission Required",
         description: "Device admin permission is required to lock apps.",
@@ -125,10 +128,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           </div>
         ),
       });
+      return;
     }
-  };
+    
+    const success = blockApp(appName, 60 * 60 * 1000); // Block for 1 hour
+    
+    if (success) {
+      toast({
+        title: "App Locked",
+        description: `${appName} has been locked for 1 hour.`,
+      });
+      
+      setUserStats(prev => ({
+        ...prev,
+        points: prev.points + 50
+      }));
+      
+      toast({
+        title: "Points Awarded",
+        description: "+50 points for locking an app!",
+      });
+    }
+  }, [permissions.deviceAdmin, requestDeviceAdminPermission]);
 
-  const updatePointsForUsage = () => {
+  const updatePointsForUsage = useCallback(() => {
     const now = new Date();
     const timeSinceLastUpdate = now.getTime() - lastPointUpdate.getTime();
     
@@ -169,13 +192,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     
     setLastPointUpdate(now);
-  };
+  }, [lastPointUpdate, todayUsage, userSettings.dailyLimits]);
 
-  const updateUserSettings = (settings: Partial<UserSettings>) => {
+  const updateUserSettings = useCallback((settings: Partial<UserSettings>) => {
     setUserSettings(prev => ({ ...prev, ...settings }));
-  };
+  }, []);
 
-  const updateDailyLimit = (appName: string, limitInMinutes: number) => {
+  const updateDailyLimit = useCallback((appName: string, limitInMinutes: number) => {
     setUserSettings(prev => ({
       ...prev,
       dailyLimits: {
@@ -188,9 +211,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       title: "Limit Updated",
       description: `New daily limit for ${appName}: ${limitInMinutes} minutes`,
     });
-  };
+  }, []);
 
-  const purchaseReward = (rewardId: string) => {
+  const purchaseReward = useCallback((rewardId: string) => {
     const reward = rewardItems.find(item => item.id === rewardId);
     
     if (reward && !reward.unlocked && userStats.points >= reward.pointCost) {
@@ -217,9 +240,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         variant: "destructive",
       });
     }
-  };
+  }, [rewardItems, userStats.points, userStats.rewards]);
 
-  const checkAndTriggerNotifications = () => {
+  const checkAndTriggerNotifications = useCallback(() => {
     if (!userSettings.notificationsEnabled) return;
     
     todayUsage.forEach(app => {
@@ -260,7 +283,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }));
       }
     });
-  };
+  }, [lockApp, todayUsage, userSettings.dailyLimits, userSettings.notificationsEnabled]);
 
   const value = {
     todayUsage,
@@ -276,8 +299,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     lockApp,
     requestUsageStatsPermission,
     requestDeviceAdminPermission,
-    hasUsageStatsPermission,
-    hasDeviceAdminPermission,
+    hasUsageStatsPermission: permissions.usageStats,
+    hasDeviceAdminPermission: permissions.deviceAdmin,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
