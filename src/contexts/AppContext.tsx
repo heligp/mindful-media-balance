@@ -9,7 +9,7 @@ import {
   rewardItems as mockRewardItems,
   formatTime
 } from '@/lib/mockData';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from "@/components/ui/use-toast";
 import { 
   checkPermissions, 
   requestPermission, 
@@ -117,16 +117,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       toast({
         title: "Permission Required",
         description: "Device admin permission is required to lock apps.",
-        action: (
-          <div className="mt-2">
-            <button 
-              onClick={requestDeviceAdminPermission} 
-              className="bg-primary text-primary-foreground py-1 px-3 rounded-md text-xs"
-            >
-              Grant Permission
-            </button>
-          </div>
-        ),
+        action: {
+          label: "Grant Permission",
+          onClick: requestDeviceAdminPermission
+        },
       });
       return;
     }
@@ -259,22 +253,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           title: `${app.appName} Limit Exceeded!`,
           description: `Consider taking a break from ${app.appName}.`,
           variant: "destructive",
-          action: (
-            <div className="flex space-x-2 mt-2">
-              <button 
-                onClick={() => lockApp(app.appName)} 
-                className="bg-destructive text-destructive-foreground py-1 px-3 rounded-md text-xs"
-              >
-                Lock Now
-              </button>
-              <button 
-                onClick={() => console.log('Snooze clicked')} 
-                className="bg-secondary text-secondary-foreground py-1 px-3 rounded-md text-xs"
-              >
-                Snooze
-              </button>
-            </div>
-          ),
+          action: {
+            label: "Lock Now",
+            onClick: () => lockApp(app.appName)
+          }
         });
         
         setUserStats(prev => ({

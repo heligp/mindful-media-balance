@@ -56,49 +56,37 @@ export const requestPermission = (permission: PermissionType): Promise<boolean> 
       toast({
         title: "Usage Stats Permission Required",
         description: "On a real Android device, you would be redirected to Settings > Usage Access",
-        action: (
-          <div className="mt-2">
-            <button 
-              onClick={() => {
-                // Simulate granting the permission
-                const newStatus = { ...permissions, usageStats: true };
-                savePermissions(newStatus);
-                toast({
-                  title: "Permission Granted",
-                  description: "Usage stats permission granted successfully."
-                });
-                resolve(true);
-              }}
-              className="bg-primary text-primary-foreground py-1 px-3 rounded-md text-xs"
-            >
-              Grant Permission
-            </button>
-          </div>
-        ),
+        action: {
+          label: "Grant Permission",
+          onClick: () => {
+            // Simulate granting the permission
+            const newStatus = { ...permissions, usageStats: true };
+            savePermissions(newStatus);
+            toast({
+              title: "Permission Granted",
+              description: "Usage stats permission granted successfully."
+            });
+            resolve(true);
+          }
+        }
       });
     } else if (permission === 'DEVICE_ADMIN') {
       toast({
         title: "Device Admin Permission Required",
         description: "On a real Android device, this would show the Device Admin activation screen",
-        action: (
-          <div className="mt-2">
-            <button 
-              onClick={() => {
-                // Simulate granting the permission
-                const newStatus = { ...permissions, deviceAdmin: true };
-                savePermissions(newStatus);
-                toast({
-                  title: "Permission Granted",
-                  description: "Device admin permission granted successfully."
-                });
-                resolve(true);
-              }}
-              className="bg-primary text-primary-foreground py-1 px-3 rounded-md text-xs"
-            >
-              Grant Permission
-            </button>
-          </div>
-        ),
+        action: {
+          label: "Grant Permission",
+          onClick: () => {
+            // Simulate granting the permission
+            const newStatus = { ...permissions, deviceAdmin: true };
+            savePermissions(newStatus);
+            toast({
+              title: "Permission Granted",
+              description: "Device admin permission granted successfully."
+            });
+            resolve(true);
+          }
+        }
       });
     }
     
