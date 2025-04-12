@@ -75,7 +75,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       toast({
         title: "Permission Granted",
         description: "Usage stats permission granted successfully.",
-        variant: "success",
       });
     }, 2000);
   };
@@ -91,7 +90,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       toast({
         title: "Permission Granted",
         description: "Device admin permission granted successfully.",
-        variant: "success",
       });
     }, 2000);
   };
@@ -101,7 +99,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       toast({
         title: "App Locked",
         description: `${appName} has been locked for 1 hour.`,
-        variant: "success",
       });
       
       setUserStats(prev => ({

@@ -46,7 +46,6 @@ const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
         <Progress 
           value={Math.min(percentUsed, 100)} 
           className={`h-2 ${isOverLimit ? 'bg-red-100' : 'bg-gray-100'}`}
-          indicatorClassName={isOverLimit ? 'bg-red-500' : undefined}
         />
         
         <div className="flex justify-between mt-2">
