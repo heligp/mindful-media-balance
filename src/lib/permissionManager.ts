@@ -5,6 +5,7 @@
  */
 
 import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 // Permission types
 export type PermissionType = 'USAGE_STATS' | 'DEVICE_ADMIN';
@@ -53,40 +54,38 @@ export const requestPermission = (permission: PermissionType): Promise<boolean> 
     const permissions = checkPermissions();
     
     if (permission === 'USAGE_STATS') {
+      const handleGrantPermission = () => {
+        // Simulate granting the permission
+        const newStatus = { ...permissions, usageStats: true };
+        savePermissions(newStatus);
+        toast({
+          title: "Permission Granted",
+          description: "Usage stats permission granted successfully."
+        });
+        resolve(true);
+      };
+
       toast({
         title: "Usage Stats Permission Required",
         description: "On a real Android device, you would be redirected to Settings > Usage Access",
-        action: {
-          label: "Grant Permission",
-          onClick: () => {
-            // Simulate granting the permission
-            const newStatus = { ...permissions, usageStats: true };
-            savePermissions(newStatus);
-            toast({
-              title: "Permission Granted",
-              description: "Usage stats permission granted successfully."
-            });
-            resolve(true);
-          }
-        }
+        action: <Button size="sm" onClick={handleGrantPermission}>Grant Permission</Button>
       });
     } else if (permission === 'DEVICE_ADMIN') {
+      const handleGrantPermission = () => {
+        // Simulate granting the permission
+        const newStatus = { ...permissions, deviceAdmin: true };
+        savePermissions(newStatus);
+        toast({
+          title: "Permission Granted",
+          description: "Device admin permission granted successfully."
+        });
+        resolve(true);
+      };
+
       toast({
         title: "Device Admin Permission Required",
         description: "On a real Android device, this would show the Device Admin activation screen",
-        action: {
-          label: "Grant Permission",
-          onClick: () => {
-            // Simulate granting the permission
-            const newStatus = { ...permissions, deviceAdmin: true };
-            savePermissions(newStatus);
-            toast({
-              title: "Permission Granted",
-              description: "Device admin permission granted successfully."
-            });
-            resolve(true);
-          }
-        }
+        action: <Button size="sm" onClick={handleGrantPermission}>Grant Permission</Button>
       });
     }
     

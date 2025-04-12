@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { UsageData, UserSettings, UserStats, RewardItem } from '@/types';
 import { 
@@ -10,6 +9,7 @@ import {
   formatTime
 } from '@/lib/mockData';
 import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import { 
   checkPermissions, 
   requestPermission, 
@@ -46,39 +46,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [lastPointUpdate, setLastPointUpdate] = useState<Date>(new Date());
   const [permissions, setPermissions] = useState(checkPermissions());
   
-  // Timer reference for cleanup
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Simulate WorkManager by using a 15-minute interval instead of 30 seconds
-  // In a real app, this would use the WorkManager API to schedule background tasks
   const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes in ms
-  // For demo purposes, we'll use 1 minute instead of 15
   const DEMO_REFRESH_INTERVAL = 60 * 1000; // 1 minute in ms
   
-  // Check permission status on mount and when permissions might change
   useEffect(() => {
     const storedPermissions = checkPermissions();
     setPermissions(storedPermissions);
   }, []);
   
-  // Simulate background work with optimized intervals
   useEffect(() => {
     console.log("Starting background work simulation with optimized interval");
     
-    // Initial data load
     const usage = generateMockUsageData();
     const weekly = generateWeeklyUsageData();
     setTodayUsage(usage);
     setWeeklyUsage(weekly);
     
-    // Simulate WorkManager with longer intervals for battery optimization
     timerRef.current = setInterval(() => {
       console.log("Updating usage data (simulating 15-minute WorkManager interval)");
       
       setTodayUsage(prevUsage => {
         return prevUsage.map(app => {
-          // Simulate more realistic usage change over a longer period
-          const usageIncrease = Math.random() * 15 * 60 * 1000; // Up to 15 minutes more usage
+          const usageIncrease = Math.random() * 15 * 60 * 1000;
           return {
             ...app,
             timeInMillis: app.timeInMillis + usageIncrease
@@ -89,7 +80,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       checkAndTriggerNotifications();
       updatePointsForUsage();
       
-    }, DEMO_REFRESH_INTERVAL); // Using 1 minute for demo purposes
+    }, DEMO_REFRESH_INTERVAL);
     
     return () => {
       if (timerRef.current) {
@@ -117,15 +108,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       toast({
         title: "Permission Required",
         description: "Device admin permission is required to lock apps.",
-        action: {
-          label: "Grant Permission",
-          onClick: requestDeviceAdminPermission
-        },
+        action: <Button size="sm" onClick={requestDeviceAdminPermission}>Grant Permission</Button>
       });
       return;
     }
     
-    const success = blockApp(appName, 60 * 60 * 1000); // Block for 1 hour
+    const success = blockApp(appName, 60 * 60 * 1000);
     
     if (success) {
       toast({
@@ -253,10 +241,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           title: `${app.appName} Limit Exceeded!`,
           description: `Consider taking a break from ${app.appName}.`,
           variant: "destructive",
-          action: {
-            label: "Lock Now",
-            onClick: () => lockApp(app.appName)
-          }
+          action: <Button size="sm" variant="destructive" onClick={() => lockApp(app.appName)}>Lock Now</Button>
         });
         
         setUserStats(prev => ({
