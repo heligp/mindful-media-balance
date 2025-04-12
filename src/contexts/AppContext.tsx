@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UsageData, UserSettings, UserStats, RewardItem } from '@/types';
 import { 
@@ -23,6 +22,10 @@ interface AppContextType {
   formatTime: (ms: number) => string;
   checkAndTriggerNotifications: () => void;
   lockApp: (appName: string) => void;
+  requestUsageStatsPermission: () => void;
+  requestDeviceAdminPermission: () => void;
+  hasUsageStatsPermission: boolean;
+  hasDeviceAdminPermission: boolean;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -34,41 +37,104 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [userStats, setUserStats] = useState<UserStats>(defaultUserStats);
   const [rewardItems, setRewardItems] = useState<RewardItem[]>(mockRewardItems);
   const [lastPointUpdate, setLastPointUpdate] = useState<Date>(new Date());
+  const [hasUsageStatsPermission, setHasUsageStatsPermission] = useState(false);
+  const [hasDeviceAdminPermission, setHasDeviceAdminPermission] = useState(false);
 
-  // Initialize mock data
   useEffect(() => {
     const usage = generateMockUsageData();
     const weekly = generateWeeklyUsageData();
     setTodayUsage(usage);
     setWeeklyUsage(weekly);
     
-    // Simulate data updates every 15 minutes (for demo, we'll use a shorter interval)
     const interval = setInterval(() => {
       console.log("Updating usage data (simulating 15-minute interval)");
       setTodayUsage(prevUsage => {
         return prevUsage.map(app => ({
           ...app,
-          timeInMillis: app.timeInMillis + (Math.random() * 10 * 60 * 1000) // Add 0-10 minutes
+          timeInMillis: app.timeInMillis + (Math.random() * 10 * 60 * 1000)
         }));
       });
       
-      // Check if notifications should be triggered
       checkAndTriggerNotifications();
       
-      // Award points for staying under limits
       updatePointsForUsage();
       
-    }, 60000); // Every minute for demo purposes, would be 900000 (15 minutes) in production
+    }, 60000);
     
     return () => clearInterval(interval);
   }, []);
-  
-  // Update points based on usage compared to limits
+
+  const requestUsageStatsPermission = () => {
+    toast({
+      title: "Requesting Usage Stats Permission",
+      description: "On a real device, this would open system settings to grant permission.",
+    });
+    
+    setTimeout(() => {
+      setHasUsageStatsPermission(true);
+      toast({
+        title: "Permission Granted",
+        description: "Usage stats permission granted successfully.",
+        variant: "success",
+      });
+    }, 2000);
+  };
+
+  const requestDeviceAdminPermission = () => {
+    toast({
+      title: "Requesting Device Admin Permission",
+      description: "On a real device, this would prompt to add device admin.",
+    });
+    
+    setTimeout(() => {
+      setHasDeviceAdminPermission(true);
+      toast({
+        title: "Permission Granted",
+        description: "Device admin permission granted successfully.",
+        variant: "success",
+      });
+    }, 2000);
+  };
+
+  const lockApp = (appName: string) => {
+    if (hasDeviceAdminPermission) {
+      toast({
+        title: "App Locked",
+        description: `${appName} has been locked for 1 hour.`,
+        variant: "success",
+      });
+      
+      setUserStats(prev => ({
+        ...prev,
+        points: prev.points + 50
+      }));
+      
+      toast({
+        title: "Points Awarded",
+        description: "+50 points for locking an app!",
+      });
+    } else {
+      toast({
+        title: "Permission Required",
+        description: "Device admin permission is required to lock apps.",
+        action: (
+          <div className="mt-2">
+            <button 
+              onClick={requestDeviceAdminPermission} 
+              className="bg-primary text-primary-foreground py-1 px-3 rounded-md text-xs"
+            >
+              Grant Permission
+            </button>
+          </div>
+        ),
+      });
+    }
+  };
+
   const updatePointsForUsage = () => {
     const now = new Date();
     const timeSinceLastUpdate = now.getTime() - lastPointUpdate.getTime();
     
-    // Only update points every 5 minutes (for demo purposes)
     if (timeSinceLastUpdate < 5 * 60 * 1000) return;
     
     let pointsEarned = 0;
@@ -77,12 +143,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const limitInMs = (userSettings.dailyLimits[app.appName] || 60) * 60 * 1000;
       
       if (app.timeInMillis <= limitInMs) {
-        // Award points for being under limit (10 points per 30 minutes under)
         const minutesUnderLimit = (limitInMs - app.timeInMillis) / (60 * 1000);
         const pointsForApp = Math.floor(minutesUnderLimit / 30) * 10;
         pointsEarned += pointsForApp;
       } else {
-        // Deduct points for exceeding limit (5 points per app over limit)
         pointsEarned -= 5;
       }
     });
@@ -93,7 +157,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         points: Math.max(0, prev.points + pointsEarned)
       }));
       
-      // Only show toast if points have changed
       if (pointsEarned > 0) {
         toast({
           title: "Points Earned!",
@@ -111,12 +174,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLastPointUpdate(now);
   };
 
-  // Update user settings
   const updateUserSettings = (settings: Partial<UserSettings>) => {
     setUserSettings(prev => ({ ...prev, ...settings }));
   };
 
-  // Update daily limit for an app
   const updateDailyLimit = (appName: string, limitInMinutes: number) => {
     setUserSettings(prev => ({
       ...prev,
@@ -132,19 +193,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  // Purchase a reward with points
   const purchaseReward = (rewardId: string) => {
     const reward = rewardItems.find(item => item.id === rewardId);
     
     if (reward && !reward.unlocked && userStats.points >= reward.pointCost) {
-      // Update user stats
       setUserStats(prev => ({
         ...prev,
         points: prev.points - reward.pointCost,
         rewards: [...prev.rewards, rewardId]
       }));
       
-      // Update reward items
       setRewardItems(prev => 
         prev.map(item => 
           item.id === rewardId ? { ...item, unlocked: true } : item
@@ -164,7 +222,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  // Check if we need to send notifications
   const checkAndTriggerNotifications = () => {
     if (!userSettings.notificationsEnabled) return;
     
@@ -200,29 +257,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ),
         });
         
-        // Deduct points for exceeding limit
         setUserStats(prev => ({
           ...prev,
           points: Math.max(0, prev.points - 5)
         }));
       }
     });
-  };
-  
-  // Mock app locking function (would integrate with DevicePolicyManager in a real Android app)
-  const lockApp = (appName: string) => {
-    toast({
-      title: "App Locking Attempted",
-      description: `In a native app, this would lock ${appName} using DevicePolicyManager.`,
-    });
-    
-    // Show a follow-up toast with instructions
-    setTimeout(() => {
-      toast({
-        title: "Root Permissions Required",
-        description: "On a real device, you would need to grant root permissions for app locking.",
-      });
-    }, 2000);
   };
 
   const value = {
@@ -237,6 +277,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     formatTime,
     checkAndTriggerNotifications,
     lockApp,
+    requestUsageStatsPermission,
+    requestDeviceAdminPermission,
+    hasUsageStatsPermission,
+    hasDeviceAdminPermission,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

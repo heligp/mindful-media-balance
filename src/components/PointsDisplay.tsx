@@ -21,6 +21,7 @@ const PointsDisplay: React.FC = () => {
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
                 <p>Earn +10 points for every 30 minutes under your limit</p>
+                <p>Earn +50 points for blocking apps when prompted</p>
                 <p>Lose 5 points when you exceed your daily limit</p>
               </TooltipContent>
             </Tooltip>
