@@ -7,7 +7,7 @@ import { Lock, Info } from 'lucide-react';
 import { UsageData } from '@/types';
 import { formatTime } from '@/lib/mockData';
 import { useApp } from '@/contexts/AppContext';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AppUsageCardProps {
   app: UsageData;
@@ -61,26 +61,24 @@ const AppUsageCard: React.FC<AppUsageCardProps> = ({ app }) => {
           <span className="text-xs text-muted-foreground">
             {isOverLimit ? 'Limit exceeded' : `${remainingFormatted} remaining`}
           </span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="sm" 
-                  variant={isOverLimit ? "destructive" : "outline"} 
-                  className={`text-xs h-7 px-2 ${!hasDeviceAdminPermission ? 'opacity-70' : ''}`}
-                  onClick={handleLockClick}
-                >
-                  <Lock className="h-3 w-3 mr-1" />
-                  {isOverLimit ? 'Lock Now' : 'Block App'}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {hasDeviceAdminPermission 
-                  ? (isOverLimit ? "Lock this app immediately" : "Block this app temporarily") 
-                  : "Requires Device Admin permission"}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="sm" 
+                variant={isOverLimit ? "destructive" : "outline"} 
+                className={`text-xs h-7 px-2 ${!hasDeviceAdminPermission ? 'opacity-70' : ''}`}
+                onClick={handleLockClick}
+              >
+                <Lock className="h-3 w-3 mr-1" />
+                {isOverLimit ? 'Lock Now' : 'Block App'}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {hasDeviceAdminPermission 
+                ? (isOverLimit ? "Lock this app immediately" : "Block this app temporarily") 
+                : "Requires Device Admin permission"}
+            </TooltipContent>
+          </Tooltip>
         </div>
       </CardContent>
     </Card>

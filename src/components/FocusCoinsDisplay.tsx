@@ -7,7 +7,6 @@ import { Coins, Award, Zap } from 'lucide-react';
 import { 
   Tooltip, 
   TooltipContent, 
-  TooltipProvider, 
   TooltipTrigger 
 } from '@/components/ui/tooltip';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
