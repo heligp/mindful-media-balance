@@ -1,73 +1,136 @@
-# Welcome to your Lovable project
+# TimeGuardian - Mindful Media Balance
 
-## Project info
+![TimeGuardian Logo](public/favicon.png)
 
-**URL**: https://lovable.dev/projects/71562dd3-5eac-4fd7-a3e4-064b23dfa958
+TimeGuardian is a mobile application designed to help you maintain a healthy balance in your digital media consumption. With intuitive and customizable features, TimeGuardian empowers you to take control of your digital time and foster more mindful habits.
 
-## How can I edit this code?
+## 🎯 Key Features
 
-There are several ways of editing your application.
+- **Smart Tracking**: Automatically monitors your usage time across different applications
+- **Customizable Limits**: Set daily or weekly limits for each app
+- **Intelligent Notifications**: Receive alerts when approaching your limits
+- **Detailed Statistics**: Visualize your usage with detailed charts and analysis
+- **Focus Mode**: Activate distraction-free concentration periods
+- **Goals & Rewards**: Set objectives and celebrate your achievements
 
-**Use Lovable**
+## 🚀 How It Works
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/71562dd3-5eac-4fd7-a3e4-064b23dfa958) and start prompting.
+1. **Initial Setup**: Customize your limits and preferences
+2. **Automatic Monitoring**: App tracks your usage in the background
+3. **Proactive Alerts**: Get notifications when approaching your limits
+4. **Weekly Analysis**: Review your usage patterns and adjust your habits
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Technologies Used
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
+- React Native
 - TypeScript
-- React
-- shadcn-ui
 - Tailwind CSS
+- Firebase (for synchronization and storage)
+- Push Notifications
+- Android App Usage API
 
-## How can I deploy this project?
+## 📱 System Requirements
 
-Simply open [Lovable](https://lovable.dev/projects/71562dd3-5eac-4fd7-a3e4-064b23dfa958) and click on Share -> Publish.
+- Android 8.0 or higher
+- 50MB free space
+- Internet connection for synchronization
 
-## Can I connect a custom domain to my Lovable project?
+## 🔒 Privacy & Security
 
-Yes it is!
+TimeGuardian respects your privacy:
+- All data is stored locally
+- Synchronization is optional and encrypted
+- We don't collect personal data without your consent
+- [Complete Privacy Policy](privacy-policy.md)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📦 Installation
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. Download TimeGuardian from Google Play Store
+2. Open the app and complete the initial setup process
+3. Customize your limits and preferences
+4. Start your journey towards more mindful technology use!
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [contribution guidelines](CONTRIBUTING.md) before submitting a pull request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+Need help or have questions?
+- Email: support@timeguardian.app
+# TimeGuardian - Mindful Media Balance
+
+![TimeGuardian Logo](public/icon.png)
+
+TimeGuardian is a mobile application designed to help you maintain a healthy balance in your digital media consumption. With intuitive and customizable features, TimeGuardian empowers you to take control of your digital time and foster more mindful habits.
+
+## 🎯 Key Features
+
+- **Smart Tracking**: Automatically monitors your usage time across different applications
+- **Customizable Limits**: Set daily or weekly limits for each app
+- **Intelligent Notifications**: Receive alerts when approaching your limits
+- **Detailed Statistics**: Visualize your usage with detailed charts and analysis
+- **Focus Mode**: Activate distraction-free concentration periods
+- **Goals & Rewards**: Set objectives and celebrate your achievements
+
+## 🚀 How It Works
+
+1. **Initial Setup**: Customize your limits and preferences
+2. **Automatic Monitoring**: App tracks your usage in the background
+3. **Proactive Alerts**: Get notifications when approaching your limits
+4. **Weekly Analysis**: Review your usage patterns and adjust your habits
+
+## 🛠️ Technologies Used
+
+- React Native
+- TypeScript
+- Tailwind CSS
+- Firebase (for synchronization and storage)
+- Push Notifications
+- Android App Usage API
+
+## 📱 System Requirements
+
+- Android 8.0 or higher
+- 50MB free space
+- Internet connection for synchronization
+
+## 🔒 Privacy & Security
+
+TimeGuardian respects your privacy:
+- All data is stored locally
+- Synchronization is optional and encrypted
+- We don't collect personal data without your consent
+- [Complete Privacy Policy](privacy-policy.md)
+
+## 📦 Installation
+
+1. Download TimeGuardian from Google Play Store
+2. Open the app and complete the initial setup process
+3. Customize your limits and preferences
+4. Start your journey towards more mindful technology use!
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [contribution guidelines](CONTRIBUTING.md) before submitting a pull request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+Need help or have questions?
+- Email: support@timeguardian.app
+
+---
+
+Developed with ❤️ by the TimeGuardian team- Discord: [Join our community](https://discord.gg/timeguardian)
+
+---
+
+Developed with ❤️ by the TimeGuardian team
