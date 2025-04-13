@@ -4,6 +4,10 @@ export interface UsageData {
   timeInMillis: number;
   color: string;
   iconName?: string;
+  scrollMetrics?: {
+    distance: string;
+    count: number;
+  };
 }
 
 export interface UserSettings {
@@ -12,6 +16,7 @@ export interface UserSettings {
   };
   notificationsEnabled: boolean;
   username?: string;
+  theme?: 'light' | 'dark' | 'system';
 }
 
 export interface RewardItem {
@@ -19,6 +24,7 @@ export interface RewardItem {
   name: string;
   description: string;
   pointCost: number;
+  coinCost?: number;
   image?: string;
   unlocked: boolean;
 }
@@ -29,4 +35,19 @@ export interface UserStats {
   highestStreak: number;
   daysUnderLimit: number;
   rewards: string[]; // IDs of unlocked rewards
+}
+
+export interface FunNotification {
+  title: string;
+  message: string;
+  imageUrl?: string;
+}
+
+export interface FocusChallenge {
+  id: string;
+  title: string;
+  description: string;
+  reward: number;
+  completed: boolean;
+  progress: number;
 }
