@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,12 +33,24 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onAccept, onDecline }) =>
             
             <h4 className="font-medium mt-4">1. Information We Collect</h4>
             <p className="text-sm">
-              <strong>App Usage Statistics:</strong> We collect data about your usage of other applications 
-              on your device, including time spent on apps, app launch frequency, and usage patterns.
-              This information is used to provide you with insights about your digital habits.
+              We collect the following information:
             </p>
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              <li><strong>App Usage Statistics:</strong> Through Android's UsageStats API, we collect data about your usage of other applications, including time spent and launch frequency.</li>
+              <li><strong>Device Information:</strong> Basic device information required for app functionality.</li>
+              <li><strong>Google Play Services:</strong> We use Google Play Services for basic app functionality and analytics.</li>
+            </ul>
             
-            <h4 className="font-medium mt-2">2. How We Use Your Information</h4>
+            <h4 className="font-medium mt-2">2. Required Permissions</h4>
+            <p className="text-sm">
+              Our app requires the following Android permissions:
+            </p>
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              <li><strong>PACKAGE_USAGE_STATS:</strong> To monitor app usage patterns</li>
+              <li><strong>DEVICE_ADMIN:</strong> To enable app blocking features</li>
+            </ul>
+            
+            <h4 className="font-medium mt-2">3. How We Use Your Information</h4>
             <ul className="list-disc pl-5 text-sm space-y-1">
               <li>To monitor and display your app usage patterns</li>
               <li>To provide personalized insights and recommendations</li>
@@ -47,25 +58,26 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onAccept, onDecline }) =>
               <li>To improve our app and develop new features</li>
             </ul>
             
-            <h4 className="font-medium mt-2">3. Data Security</h4>
+            <h4 className="font-medium mt-2">4. Data Storage and Security</h4>
             <p className="text-sm">
-              Your data is stored securely on Firebase with industry-standard encryption.
-              We do not share your personal information with third parties without your consent.
+              All usage data is stored locally on your device. We use industry-standard security 
+              measures to protect your information. We do not share your personal information 
+              with third parties.
             </p>
             
-            <h4 className="font-medium mt-2">4. Your Rights</h4>
+            <h4 className="font-medium mt-2">5. Your Rights</h4>
             <p className="text-sm">
               You can request access to your data, correction of inaccurate data, or deletion
               of your data at any time through the app settings.
             </p>
             
-            <h4 className="font-medium mt-2">5. Changes to This Policy</h4>
+            <h4 className="font-medium mt-2">6. Changes to This Policy</h4>
             <p className="text-sm">
               We may update our Privacy Policy from time to time. We will notify you of any
               changes by posting the new Privacy Policy on this page and updating the "Effective Date."
             </p>
             
-            <h4 className="font-medium mt-2">6. Contact Us</h4>
+            <h4 className="font-medium mt-2">7. Contact Us</h4>
             <p className="text-sm">
               If you have questions about this Privacy Policy, please contact us at:
               privacy@timeguardian.app

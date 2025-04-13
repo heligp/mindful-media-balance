@@ -1,14 +1,16 @@
-
 import React from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { useApp } from '@/contexts/AppContext';
-import { Bell, Info, Lock, Shield } from 'lucide-react';
+import { Bell, Info, Lock, Shield, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Navbar from '@/components/Navbar';
 import { toast } from '@/components/ui/use-toast';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import PrivacyPolicy from '@/components/PrivacyPolicy';
+import TermsOfService from '@/components/TermsOfService';
 
 const SettingsPage = () => {
   const { userSettings, updateUserSettings } = useApp();
@@ -119,21 +121,33 @@ const SettingsPage = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Shield className="h-5 w-5 mr-2" />
-                Privacy
+                <FileText className="h-5 w-5 mr-2" />
+                Legal Documents
               </CardTitle>
+              <CardDescription>Review our policies and terms</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm">All data is stored locally on your device</p>
-                <Button 
-                  variant="destructive" 
-                  className="w-full"
-                  onClick={resetAllData}
-                >
-                  Reset All Data
-                </Button>
-              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    Privacy Policy
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <PrivacyPolicy onAccept={() => {}} onDecline={() => {}} />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    Terms of Service
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <TermsOfService onAccept={() => {}} onDecline={() => {}} />
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
           
