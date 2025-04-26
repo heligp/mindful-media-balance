@@ -8,6 +8,19 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      // Ejemplo de proxy para una API
+      '/api': {
+        target: 'http://localhost:3000', // URL de tu API
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      // Ejemplo de proxy para websockets
+      '/ws': {
+        target: 'ws://localhost:3000',
+        ws: true
+      }
+    }
   },
   plugins: [
     react(),
