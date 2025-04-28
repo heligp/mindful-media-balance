@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
+  base: '/mindful-media-balance/',
   plugins: [
     react(),
     mode === 'development' &&
