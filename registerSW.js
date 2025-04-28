@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/mindful-media-balance/sw.js', { scope: '/mindful-media-balance/' })})}
